@@ -1,5 +1,7 @@
 # Document Illustrator
 
+![Document Illustrator Cover](./cover.png)
+
 > 基于 AI 智能分析的文档配图生成工具
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
