@@ -100,12 +100,15 @@ def generate_image(title, content, style_prompt, output_path, aspect_ratio="16:9
         print("请运行: pip install google-genai", file=sys.stderr)
         sys.exit(1)
 
-    # 获取 API 密钥
+    # 获取 API 密钥和代理配置
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         print("错误: 未设置 GEMINI_API_KEY 环境变量", file=sys.stderr)
         print("请在 .env 文件中设置: GEMINI_API_KEY=your-api-key", file=sys.stderr)
         sys.exit(1)
+
+    # 获取可选的 API 端点配置（用于代理）
+    api_endpoint = os.environ.get("GEMINI_API_ENDPOINT")
 
     # 组合提示词
     if is_cover:
@@ -137,8 +140,17 @@ def generate_image(title, content, style_prompt, output_path, aspect_ratio="16:9
 """
 
     try:
-        # 调用 API
-        client = genai.Client(api_key=api_key)
+        # 调用 API（支持代理配置）
+        if api_endpoint:
+            # 使用自定义代理端点
+            from google.genai import types as client_types
+            client = genai.Client(
+                api_key=api_key,
+                http_options=client_types.HttpOptions(api_version='v1beta', base_url=api_endpoint)
+            )
+            print(f"  使用代理: {api_endpoint}")
+        else:
+            client = genai.Client(api_key=api_key)
 
         response = client.models.generate_content(
             model="gemini-3-pro-image-preview",  # Nano Banana Pro
